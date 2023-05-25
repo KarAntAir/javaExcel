@@ -8,17 +8,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class JavaExcel {
-    private File fileTTN = new File("./src/main/resources/source/ttn.xls");;
 
+    private File fileTTN = new File("./src/main/resources/source/ttn.xls");
 
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         ExcelCellNumbers.fillRowsDataList();
         new JavaExcel().doSmth();
     }
