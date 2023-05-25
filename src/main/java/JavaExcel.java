@@ -50,12 +50,12 @@ public class JavaExcel {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
 
-            Cell FM7 = sheet1.getRow(7).getCell(168);
-            Cell FS7 = sheet1.getRow(7).getCell(174);
-            Cell FZ7 = sheet1.getRow(7).getCell(181);
-            FM7.setCellValue(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-            FS7.setCellValue(calendar.get(Calendar.MONTH));
-            FZ7.setCellValue(calendar.get(Calendar.YEAR));
+            Cell FM7 = sheet1.getRow(6).getCell(168);
+            Cell FS7 = sheet1.getRow(6).getCell(174);
+            Cell FZ7 = sheet1.getRow(6).getCell(181);
+            FM7.setCellValue(new SimpleDateFormat("dd").format(date));
+            FS7.setCellValue(new SimpleDateFormat("MM").format(date));
+            FZ7.setCellValue(new SimpleDateFormat("yyyy").format(date));
 
 
             Cell AS18 = sheet1.getRow(17).getCell(44);
@@ -134,5 +134,7 @@ public class JavaExcel {
                 break;
         }
     }
+
+    public void 
 
 }
