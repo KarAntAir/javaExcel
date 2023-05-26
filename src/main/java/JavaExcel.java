@@ -1,4 +1,5 @@
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -7,6 +8,9 @@ import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -73,8 +77,8 @@ public class JavaExcel {
             Cell BR42 = sheet1.getRow(41).getCell(69);
             cellCopy(row.getCell(21),BR42);
 
-//            Cell BB42 = sheet1.getRow(41).getCell(CellReference.convertColStringToIndex("BB"));
-//            setPict(workbook,sheet1,BB42);
+            Cell BB42 = sheet1.getRow(41).getCell(CellReference.convertColStringToIndex("BB"));
+            setPict(workbook,sheet1,BB42);
 
 
             Sheet sheet2 = workbook.getSheetAt(1); // заполняем второй лист накладной
@@ -142,32 +146,44 @@ public class JavaExcel {
 
 
     public void setPict(Workbook workbook, Sheet sheet, Cell cell) throws IOException {
+        BufferedImage originalImg = ImageIO.read(
+                new File("./src/main/resources/source/pictures/3.png"));
 
-//        anchor.setCol1(cell.getColumnIndex()); // Sets the column (0 based) of the first cell.
-//        anchor.setCol2(cell.getColumnIndex()+1); // Sets the column (0 based) of the Second cell.
-//        anchor.setRow1(cell.getRowIndex()); // Sets the row (0 based) of the first cell.
-//        anchor.setRow2(cell.getRowIndex()+1); // Sets the row (0 based) of the Second cell.
+        BufferedImage SubImg = rotate(originalImg);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(SubImg, "png", baos);
+        byte[] bytes = baos.toByteArray();
 
-
-        // Загружаем изображение из файла
-        FileInputStream imageFile = new FileInputStream("./src/main/resources/source/pictures/2.jpg");
-        byte[] imageBytes = IOUtils.toByteArray(imageFile);
-        imageFile.close();
 
         // Добавляем изображение в документ
-        int pictureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_JPEG);
+        int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
         CreationHelper helper = workbook.getCreationHelper();
         Drawing drawing = sheet.createDrawingPatriarch();
 
-        // Создаем якорь для изображения
-        ClientAnchor anchor = helper.createClientAnchor();
-        anchor.setCol1(cell.getColumnIndex()); // Установите номер столбца, в котором должно быть изображение
-        anchor.setCol2(cell.getColumnIndex()+1);
-        anchor.setRow1(cell.getRowIndex()); // Установите номер строки, в которой должно быть изображение
-        anchor.setRow2(cell.getRowIndex()+1);
+        ClientAnchor pechatAnc = helper.createClientAnchor();
 
-        // Создаем объект картинки
-        Picture picture = drawing.createPicture(anchor, pictureIdx);
-        //picture.resize(); // Масштабируем изображение, чтобы оно подходило к размерам ячейки
+        pechatAnc.setCol1(90);
+        pechatAnc.setCol2(140);
+        pechatAnc.setRow1(28);
+        pechatAnc.setRow2(48);
+
+        drawing.createPicture(pechatAnc, pictureIdx);
+
+    }
+
+    public static BufferedImage rotate(BufferedImage img) {
+
+        int width = img.getWidth();
+        int height = img.getHeight();
+
+        BufferedImage newImage = new BufferedImage(
+                img.getWidth(), img.getHeight(), img.getType());
+
+        Graphics2D g2 = newImage.createGraphics();
+
+        g2.rotate(Math.toRadians(45), width / 2, height / 2);
+        g2.drawImage(img, null, 0, 0);
+
+        return newImage;
     }
 }
