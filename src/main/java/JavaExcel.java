@@ -154,7 +154,6 @@ public class JavaExcel {
         ImageIO.write(SubImg, "png", baos);
         byte[] bytes = baos.toByteArray();
 
-
         // Добавляем изображение в документ
         int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
         CreationHelper helper = workbook.getCreationHelper();
