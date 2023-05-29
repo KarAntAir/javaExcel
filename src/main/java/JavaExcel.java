@@ -63,8 +63,8 @@ public class JavaExcel {
             FZ7.setCellValue(new SimpleDateFormat("yyyy").format(date));
 
 
-            Cell BB42 = sheet1.getRow(41).getCell(CellReference.convertColStringToIndex("BB"));
-            setPict(workbook,sheet1,BB42);
+            Cell BD39 = sheet1.getRow(41).getCell(CellReference.convertColStringToIndex("BD"));
+            setPict(workbook,sheet1,BD39);
 
             Sheet sheet2 = workbook.getSheetAt(1); // заполняем второй лист накладной
 
@@ -145,10 +145,12 @@ public class JavaExcel {
         // Создаем якорь для изображения
         ClientAnchor pechatAnc = helper.createClientAnchor();
 
-        pechatAnc.setCol1(90);
-        pechatAnc.setCol2(140);
-        pechatAnc.setRow1(28);
-        pechatAnc.setRow2(48);
+
+        pechatAnc.setCol1(45);
+        pechatAnc.setCol2(95);
+        pechatAnc.setRow1(26);
+        pechatAnc.setRow2(46);
+
 
         drawing.createPicture(pechatAnc, pictureIdx);
 
@@ -164,7 +166,8 @@ public class JavaExcel {
 
         Graphics2D g2 = newImage.createGraphics();
 
-        g2.rotate(Math.toRadians(45), width / 2, height / 2);
+        int rotationAngle = (int) (Math.random()  * 61) - 30;
+        g2.rotate(Math.toRadians(rotationAngle), width / 2, height / 2);
         g2.drawImage(img, null, 0, 0);
 
 
