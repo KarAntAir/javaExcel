@@ -1,4 +1,7 @@
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -13,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,22 +25,26 @@ import java.util.HashMap;
 
 public class JavaExcel {
 
-    private File fileTTN = new File("./src/main/resources/source/ttn.xls");
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    private File fileTTN = new File("ttn.xls");
+
+
+    public static void main(String[] args) throws IOException, URISyntaxException, InvalidFormatException {
         ExcelCellNumbers.fillRowsDataList();
         new JavaExcel().doSmth();
     }
 
-    public void doSmth() throws IOException {
+    public void doSmth() throws IOException, InvalidFormatException {
         //for (int i = 3; i < ExcelCellNumbers.rowsDataList.size(); i++)
         for (int i = 3; i < 7; i++) {
             Row row = ExcelCellNumbers.rowsDataList.get(i);
-            File fileTTNRes = new File("./src/main/resources/result/ttnRes"+i+".xls");
-            Files.copy(fileTTN.toPath(),fileTTNRes.toPath());           //копируем шаблон для дальнейшего заполнения
+            File fileTTNRes = new File("ttnRes"+i+".xls");
+            Files.copy(fileTTN.toPath(),fileTTNRes.toPath(), StandardCopyOption.REPLACE_EXISTING);           //копируем шаблон для дальнейшего заполнения
 
             FileInputStream inputStream = new FileInputStream(fileTTNRes);
-            Workbook workbook = WorkbookFactory.create(inputStream);
+
+            Workbook workbook = new HSSFWorkbook(inputStream);
+
 
             Sheet sheet1 = workbook.getSheetAt(0); // заполняем первый лист накладной
 
@@ -120,7 +128,7 @@ public class JavaExcel {
 
     public void setPict(Workbook workbook, Sheet sheet, Cell cell) throws IOException {
         BufferedImage originalImg = ImageIO.read(
-                new File("./src/main/resources/source/pictures/3.png"));
+                new File("3.png"));
 
         BufferedImage SubImg = rotate(originalImg);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
