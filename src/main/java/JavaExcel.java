@@ -23,9 +23,11 @@ public class JavaExcel {
     public static File dataFile;
 
     private JFrame mainFrame;
-    private JPanel firstPanel;
-    private JPanel secondPanel;
-    private JPanel barPanel;
+    private JPanel templateSelectorPanel;
+    private JPanel templateSelectorPathPanel;
+    private JPanel dataSelectorPanel;
+    private JPanel dataSelectorPathPanel;
+    private JPanel statusBarPanel;
     private JPanel actionPanel;
     private static JProgressBar progressBar;
 
@@ -36,61 +38,73 @@ public class JavaExcel {
     private void prepareGUI(){
         mainFrame = new JFrame("SWING TRY");
         mainFrame.setSize(400,400);
-        mainFrame.setLayout(new GridLayout(4, 1));
+        mainFrame.setLayout(new GridLayout(6, 1));
 
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent){
                 System.exit(0);
             }
         });
-        firstPanel = new JPanel();
-        secondPanel = new JPanel();
-        barPanel = new JPanel();
+        templateSelectorPanel = new JPanel();
+        templateSelectorPathPanel = new JPanel();
+        dataSelectorPanel = new JPanel();
+        dataSelectorPathPanel = new JPanel();
+        statusBarPanel = new JPanel();
         actionPanel = new JPanel();
 
-        mainFrame.add(firstPanel);
-        mainFrame.add(secondPanel);
-        mainFrame.add(barPanel);
+        mainFrame.add(templateSelectorPanel);
+        mainFrame.add(templateSelectorPathPanel);
+        mainFrame.add(dataSelectorPanel);
+        mainFrame.add(dataSelectorPathPanel);
+        mainFrame.add(statusBarPanel);
         mainFrame.add(actionPanel);
         mainFrame.setVisible(true);
     }
 
     private void showSwingUI(){
-        JPanel fPanel = new JPanel();
-        JLabel fLabel = new JLabel("select template file");
-        JButton fButton = new JButton("select ttn file");
-        JLabel fLabel2 = new JLabel("no file selected");
-        fPanel.add(fLabel);
-        fPanel.add(fButton);
-        fPanel.add(fLabel2);
-        ActionListener dataL = new DataListener(fLabel2);
-        fButton.addActionListener(dataL);
-        firstPanel.add(fPanel);
+        JPanel templateSelectorPan = new JPanel();
+        JLabel templateSelectorText = new JLabel("Выберете файл шаблона");
+        JButton templateSelectorButton = new JButton("Выбрать шаблон");
+        templateSelectorPan.add(templateSelectorText);
+        templateSelectorPan.add(templateSelectorButton);
 
-        JPanel panel2 = new JPanel();
-        JLabel sLabel = new JLabel("select data file");
-        JButton sButton = new JButton("select data file");
-        JLabel sLabel2 = new JLabel("no file selected");
-        panel2.add(sLabel);
-        panel2.add(sButton);
-        panel2.add(sLabel2);
-        ActionListener templateL = new DataListener(sLabel2);
-        sButton.addActionListener(templateL);
-        secondPanel.add(panel2);
+        JPanel templatePathPan = new JPanel();
+        JLabel templateResultText = new JLabel("Файл не выбран");
+        templatePathPan.add(templateResultText);
+        templateSelectorPathPanel.add(templatePathPan);
+
+        ActionListener dataListener = new DataListener(templateResultText);
+        templateSelectorButton.addActionListener(dataListener);
+        templateSelectorPanel.add(templateSelectorPan);
+
+        JPanel dataSelectorPan = new JPanel();
+        JLabel dataSelectorText = new JLabel("Выберете файл данных");
+        JButton dataSelectorButton = new JButton("Выбрать файл данных");
+        dataSelectorPan.add(dataSelectorText);
+        dataSelectorPan.add(dataSelectorButton);
+
+        JPanel dataPathPan = new JPanel();
+        JLabel dataResultText = new JLabel("Файл не выбран");
+        dataPathPan.add(dataResultText);
+        dataSelectorPathPanel.add(dataPathPan);
+
+        ActionListener templateL = new DataListener(dataResultText);
+        dataSelectorButton.addActionListener(templateL);
+        dataSelectorPanel.add(dataSelectorPan);
 
         JPanel barPan = new JPanel();
         progressBar = new JProgressBar();
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
         barPan.add(progressBar);
-        barPanel.add(barPan);
+        statusBarPanel.add(barPan);
 
-        JPanel panel3 = new JPanel();
+        JPanel actionPan = new JPanel();
         JButton actionButton = new JButton("Run");
-        panel3.add(actionButton);
+        actionPan.add(actionButton);
         ActionListener runListener = new RunListener();
         actionButton.addActionListener(runListener);
-        actionPanel.add(panel3);
+        actionPanel.add(actionPan);
 
         mainFrame.setVisible(true);
     }
@@ -122,7 +136,7 @@ public class JavaExcel {
             if (result == JFileChooser.APPROVE_OPTION) {
                 label.setText(j.getSelectedFile().getAbsolutePath());
                 String com = e.getActionCommand();
-                if (com.equals("select data file")) {
+                if (com.equals("Выбрать файл данных")) {
                     JavaExcel.dataFile = new File(j.getSelectedFile().getAbsolutePath());
                     System.out.println("setting data file as " + j.getSelectedFile().getAbsolutePath());
                 } else {
@@ -160,7 +174,6 @@ public class JavaExcel {
 
             Workbook workbook = new HSSFWorkbook(inputStream);
 
-
             Sheet sheet1 = workbook.getSheetAt(0); // заполняем первый лист накладной
 
             fillSheet(1, sheet1, row);
@@ -184,8 +197,6 @@ public class JavaExcel {
             Sheet sheet2 = workbook.getSheetAt(1); // заполняем второй лист накладной
 
             fillSheet(2, sheet2, row);
-
-
 
             inputStream.close();
 
@@ -240,54 +251,5 @@ public class JavaExcel {
                 resCell.setBlank();
                 break;
         }
-    }
-
-
-    public static void setPict(Workbook workbook, Sheet sheet, Cell cell) throws IOException {
-        BufferedImage originalImg = ImageIO.read(
-                new File("3.png"));
-
-        BufferedImage SubImg = rotate(originalImg);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(SubImg, "png", baos);
-        byte[] bytes = baos.toByteArray();
-
-
-
-        // Добавляем изображение в документ
-        int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-        CreationHelper helper = workbook.getCreationHelper();
-        Drawing drawing = sheet.createDrawingPatriarch();
-
-        // Создаем якорь для изображения
-        ClientAnchor pechatAnc = helper.createClientAnchor();
-
-
-        pechatAnc.setCol1(45);
-        pechatAnc.setCol2(95);
-        pechatAnc.setRow1(26);
-        pechatAnc.setRow2(46);
-
-
-        drawing.createPicture(pechatAnc, pictureIdx);
-
-    }
-
-    public static BufferedImage rotate(BufferedImage img) {
-
-        int width = img.getWidth();
-        int height = img.getHeight();
-
-        BufferedImage newImage = new BufferedImage(
-                img.getWidth(), img.getHeight(), img.getType());
-
-        Graphics2D g2 = newImage.createGraphics();
-
-        int rotationAngle = (int) (Math.random()  * 61) - 30;
-        g2.rotate(Math.toRadians(rotationAngle), width / 2, height / 2);
-        g2.drawImage(img, null, 0, 0);
-
-
-        return newImage;
     }
 }
