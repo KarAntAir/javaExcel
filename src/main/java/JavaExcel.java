@@ -25,7 +25,9 @@ public class JavaExcel {
     private JFrame mainFrame;
     private JPanel firstPanel;
     private JPanel secondPanel;
+    private JPanel barPanel;
     private JPanel actionPanel;
+    private static JProgressBar progressBar;
 
     public JavaExcel(){
         prepareGUI();
@@ -34,7 +36,7 @@ public class JavaExcel {
     private void prepareGUI(){
         mainFrame = new JFrame("SWING TRY");
         mainFrame.setSize(400,400);
-        mainFrame.setLayout(new GridLayout(3, 1));
+        mainFrame.setLayout(new GridLayout(4, 1));
 
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent){
@@ -43,10 +45,12 @@ public class JavaExcel {
         });
         firstPanel = new JPanel();
         secondPanel = new JPanel();
+        barPanel = new JPanel();
         actionPanel = new JPanel();
 
         mainFrame.add(firstPanel);
         mainFrame.add(secondPanel);
+        mainFrame.add(barPanel);
         mainFrame.add(actionPanel);
         mainFrame.setVisible(true);
     }
@@ -74,6 +78,13 @@ public class JavaExcel {
         sButton.addActionListener(templateL);
         secondPanel.add(panel2);
 
+        JPanel barPan = new JPanel();
+        progressBar = new JProgressBar();
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        barPan.add(progressBar);
+        barPanel.add(barPan);
+
         JPanel panel3 = new JPanel();
         JButton actionButton = new JButton("Run");
         panel3.add(actionButton);
@@ -90,9 +101,7 @@ public class JavaExcel {
             try {
                 ExcelCellNumbers.fillRowsDataList();
                 JavaExcel.doSmth();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (InvalidFormatException ex) {
+            } catch (IOException | InvalidFormatException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -127,7 +136,7 @@ public class JavaExcel {
         }
     }
 
-    public static void main(String[] args) throws IOException, InvalidFormatException {
+    public static void main(String[] args) {
 //        ExcelCellNumbers.fillRowsDataList();
 //        new JavaExcel().doSmth();
 
@@ -137,7 +146,11 @@ public class JavaExcel {
 
     public static void doSmth() throws IOException {
         //for (int i = 3; i < ExcelCellNumbers.rowsDataList.size(); i++)
-        for (int i = 3; i < 7; i++) {
+        int startIndex = 3;
+        int endIndex = 7;
+        int progressPart = (100 / (endIndex - startIndex));
+        int currentProgress = 0;
+        for (int i = 3; i < endIndex; i++) {
             Row row = ExcelCellNumbers.rowsDataList.get(i);
             File fileTTNRes = new File("ttnRes"+i+".xls");
 //            Files.copy(fileTTN.toPath(),fileTTNRes.toPath(), StandardCopyOption.REPLACE_EXISTING);           //копируем шаблон для дальнейшего заполнения
@@ -180,6 +193,8 @@ public class JavaExcel {
             workbook.write(os);
             workbook.close();
             os.close();
+            currentProgress += progressPart;
+            progressBar.setValue(currentProgress);
         }
 
     }
