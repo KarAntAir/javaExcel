@@ -1,45 +1,147 @@
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class JavaExcel {
 
+//    private File fileTTN = new File("ttn.xls");
+    private static File TTNFile;
+    public static File dataFile;
 
-    private File fileTTN = new File("ttn.xls");
+    private JFrame mainFrame;
+    private JPanel firstPanel;
+    private JPanel secondPanel;
+    private JPanel actionPanel;
 
-
-    public static void main(String[] args) throws IOException, URISyntaxException, InvalidFormatException {
-        ExcelCellNumbers.fillRowsDataList();
-        new JavaExcel().doSmth();
+    public JavaExcel(){
+        prepareGUI();
     }
 
-    public void doSmth() throws IOException, InvalidFormatException {
+    private void prepareGUI(){
+        mainFrame = new JFrame("SWING TRY");
+        mainFrame.setSize(400,400);
+        mainFrame.setLayout(new GridLayout(3, 1));
+
+        mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent){
+                System.exit(0);
+            }
+        });
+        firstPanel = new JPanel();
+        secondPanel = new JPanel();
+        actionPanel = new JPanel();
+
+        mainFrame.add(firstPanel);
+        mainFrame.add(secondPanel);
+        mainFrame.add(actionPanel);
+        mainFrame.setVisible(true);
+    }
+
+    private void showSwingUI(){
+        JPanel fPanel = new JPanel();
+        JLabel fLabel = new JLabel("select template file");
+        JButton fButton = new JButton("select ttn file");
+        JLabel fLabel2 = new JLabel("no file selected");
+        fPanel.add(fLabel);
+        fPanel.add(fButton);
+        fPanel.add(fLabel2);
+        ActionListener dataL = new DataListener(fLabel2);
+        fButton.addActionListener(dataL);
+        firstPanel.add(fPanel);
+
+        JPanel panel2 = new JPanel();
+        JLabel sLabel = new JLabel("select data file");
+        JButton sButton = new JButton("select data file");
+        JLabel sLabel2 = new JLabel("no file selected");
+        panel2.add(sLabel);
+        panel2.add(sButton);
+        panel2.add(sLabel2);
+        ActionListener templateL = new DataListener(sLabel2);
+        sButton.addActionListener(templateL);
+        secondPanel.add(panel2);
+
+        JPanel panel3 = new JPanel();
+        JButton actionButton = new JButton("Run");
+        panel3.add(actionButton);
+        ActionListener runListener = new RunListener();
+        actionButton.addActionListener(runListener);
+        actionPanel.add(panel3);
+
+        mainFrame.setVisible(true);
+    }
+
+    static class RunListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                ExcelCellNumbers.fillRowsDataList();
+                JavaExcel.doSmth();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidFormatException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    static class DataListener implements ActionListener {
+
+        private JLabel label;
+        DataListener(JLabel l) {
+            this.label = l;
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            File workingDirectory = new File(System.getProperty("user.dir"));
+            JFileChooser j = new JFileChooser();
+            j.setCurrentDirectory(workingDirectory);
+            int result = j.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                label.setText(j.getSelectedFile().getAbsolutePath());
+                String com = e.getActionCommand();
+                if (com.equals("select data file")) {
+                    JavaExcel.dataFile = new File(j.getSelectedFile().getAbsolutePath());
+                    System.out.println("setting data file as " + j.getSelectedFile().getAbsolutePath());
+                } else {
+                    JavaExcel.TTNFile = new File(j.getSelectedFile().getAbsolutePath());
+                    System.out.println("setting ttn file as " + j.getSelectedFile().getAbsolutePath());
+
+                }
+            } else {
+                label.setText("cancel");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException, InvalidFormatException {
+//        ExcelCellNumbers.fillRowsDataList();
+//        new JavaExcel().doSmth();
+
+        JavaExcel javaExcel = new JavaExcel();
+        javaExcel.showSwingUI();
+    }
+
+    public static void doSmth() throws IOException {
         //for (int i = 3; i < ExcelCellNumbers.rowsDataList.size(); i++)
         for (int i = 3; i < 7; i++) {
             Row row = ExcelCellNumbers.rowsDataList.get(i);
             File fileTTNRes = new File("ttnRes"+i+".xls");
-            Files.copy(fileTTN.toPath(),fileTTNRes.toPath(), StandardCopyOption.REPLACE_EXISTING);           //копируем шаблон для дальнейшего заполнения
+//            Files.copy(fileTTN.toPath(),fileTTNRes.toPath(), StandardCopyOption.REPLACE_EXISTING);           //копируем шаблон для дальнейшего заполнения
+            Files.copy(TTNFile.toPath(),fileTTNRes.toPath(), StandardCopyOption.REPLACE_EXISTING);           //копируем шаблон для дальнейшего заполнения
 
             FileInputStream inputStream = new FileInputStream(fileTTNRes);
 
@@ -64,7 +166,7 @@ public class JavaExcel {
 
 
             Cell BD39 = sheet1.getRow(41).getCell(CellReference.convertColStringToIndex("BD"));
-            setPict(workbook,sheet1,BD39);
+            //setPict(workbook,sheet1,BD39);
 
             Sheet sheet2 = workbook.getSheetAt(1); // заполняем второй лист накладной
 
@@ -82,7 +184,7 @@ public class JavaExcel {
 
     }
 
-    private void fillSheet(Integer sheetNumber, Sheet sheetToFill, Row dataRow) {
+    private static void fillSheet(Integer sheetNumber, Sheet sheetToFill, Row dataRow) {
         for (CellMapping cellMapping : CellMapping.mapping.get(sheetNumber)) {
             Row resultRow = sheetToFill.getRow(cellMapping.getRow());
             Cell resultCell = resultRow.getCell(CellReference.convertColStringToIndex(cellMapping.getColumn()));
@@ -91,7 +193,7 @@ public class JavaExcel {
     }
 
 
-    public void cellCopy(Cell cell, Cell resCell, CellMapping mapping){
+    public static void cellCopy(Cell cell, Cell resCell, CellMapping mapping){
         if (cell==null) {
             resCell.setBlank();
             return;
@@ -126,7 +228,7 @@ public class JavaExcel {
     }
 
 
-    public void setPict(Workbook workbook, Sheet sheet, Cell cell) throws IOException {
+    public static void setPict(Workbook workbook, Sheet sheet, Cell cell) throws IOException {
         BufferedImage originalImg = ImageIO.read(
                 new File("3.png"));
 
