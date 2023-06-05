@@ -1,12 +1,10 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CellMapping {
     private String column;
     private Integer row;
-    private String dataRow;
+    private String dataColumn;
     private Boolean replaceStuff;
 
     public static HashMap<Integer, ArrayList<CellMapping>> mapping = new HashMap<>();
@@ -54,10 +52,10 @@ public class CellMapping {
         }});
     }};
 
-    public CellMapping(String column, Integer row, String dataRow, Boolean replaceStuff) {
+    public CellMapping(String column, Integer row, String dataColumn, Boolean replaceStuff) {
         this.column = column;
         this.row = row - 1;
-        this.dataRow = dataRow;
+        this.dataColumn = dataColumn;
         this.replaceStuff = replaceStuff;
     }
 
@@ -69,8 +67,8 @@ public class CellMapping {
         return row;
     }
 
-    public String getDataRow() {
-        return dataRow;
+    public String getDataColumn() {
+        return dataColumn;
     }
 
     public Boolean getReplaceStuff() {
