@@ -104,7 +104,6 @@ public class JavaExcel {
 
                     inputStream.close();
 
-                    fileTTNRes = new File(newDirectory + File.separatorChar + (i + 1) + "tempFile.xls");
                     File renamedFile = new File(newDirectory + File.separatorChar + fileNameTTNPart + ".xls");
                     fileTTNRes.renameTo(renamedFile);
 
