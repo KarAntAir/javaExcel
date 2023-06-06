@@ -12,7 +12,6 @@ public class ExcelCellNumbers {
     public static List<Row> rowsDataList = new ArrayList<>();
 
     public static void fillRowsDataList() throws IOException, InvalidFormatException {
-        System.out.println("before rows");
         OPCPackage pkg = OPCPackage.open(JavaExcel.dataFile);
         XSSFWorkbook workbook = new XSSFWorkbook(pkg);
         Sheet sheet = workbook.getSheetAt(0);
@@ -20,7 +19,6 @@ public class ExcelCellNumbers {
             rowsDataList.add(row);
         }
         pkg.close();
-        System.out.println("after rows");
     }
 }
 

@@ -60,7 +60,7 @@ public class Builder {
         JPanel actionPan = new JPanel();
         JButton actionButton = new JButton("Run");
         actionPan.add(actionButton);
-        statusText = new JLabel("Статус");
+        statusText = new JLabel("Статус - генерация не начата");
         actionPan.add(statusText);
         ActionListener runListener = new RunListener();
         actionButton.addActionListener(runListener);
