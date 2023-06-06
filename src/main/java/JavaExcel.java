@@ -99,6 +99,9 @@ public class JavaExcel {
 
                     fillSheet(2, sheet2, row);
 
+                    FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
+                    formulaEvaluator.evaluateAll();
+
                     inputStream.close();
 
                     fileTTNRes = new File(newDirectory + File.separatorChar + (i + 1) + "tempFile.xls");
