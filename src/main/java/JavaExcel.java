@@ -1,5 +1,6 @@
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellReference;
 
 import javax.swing.*;
@@ -62,7 +63,7 @@ public class JavaExcel {
                     Cell ttnNumber = row.getCell(CellReference.convertColStringToIndex("L"));
                     String fileNameTTNPart = getFileNameTTNPart(i, ttnNumber);
 
-                    File fileTTNRes = new File(newDirectory + File.separatorChar + (i + 1) + "tempFile.xls");
+                    File fileTTNRes = new File(newDirectory + File.separatorChar + fileNameTTNPart + ".xls");
                     Files.copy(TTNFile.toPath(), fileTTNRes.toPath(), StandardCopyOption.REPLACE_EXISTING);           //копируем шаблон для дальнейшего заполнения
 
                     FileInputStream inputStream = new FileInputStream(fileTTNRes);
@@ -104,10 +105,7 @@ public class JavaExcel {
 
                     inputStream.close();
 
-                    File renamedFile = new File(newDirectory + File.separatorChar + fileNameTTNPart + ".xls");
-                    fileTTNRes.renameTo(renamedFile);
-
-                    FileOutputStream os = new FileOutputStream(renamedFile);
+                    FileOutputStream os = new FileOutputStream(fileTTNRes);
                     workbook.write(os);
                     workbook.close();
                     os.close();
@@ -119,7 +117,6 @@ public class JavaExcel {
                 UI.progressBar.setValue(100);
                 UI.setStatusText("Статус - генерация завершена");
             } catch (Exception e) {}
-
             return null;
         }
 
