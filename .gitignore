@@ -1,3 +1,4 @@
 ﻿src/main/resources/result
 /target/
 /.idea/
+.DS_Store
