@@ -1,4 +1,4 @@
 ﻿src/main/resources/result
-.idea
-target
 /target/
+/.idea/
+.DS_Store
