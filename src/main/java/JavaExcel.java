@@ -23,14 +23,6 @@ public class JavaExcel {
 //        new JavaExcel();
 //        System.out.println(s);
 //        System.out.println(s1);
-
-
-//        try {
-//            PDFConverter.saveAsPdf2();
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     public static void doWork() {
