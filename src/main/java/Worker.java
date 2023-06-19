@@ -41,8 +41,9 @@ public class Worker extends SwingWorker<Object, Object> {
         try {
             String operationSystem = System.getProperty("os.name").toLowerCase();
             if (operationSystem.contains("win")) {
+                String winPath = findLibreOfficePath();
                 pb = new ProcessBuilder(
-                    "libreoffice", "--headless",
+                    winPath, "--headless",
                     "--convert-to", "pdf", sourceFiles,
                     "--outdir", targetDir);
             } else {
@@ -406,5 +407,27 @@ public class Worker extends SwingWorker<Object, Object> {
         for (int j = 0; j < CellReference.convertColStringToIndex(lastColumn); j++) {
             sheet.setColumnWidth(j, 222);
         }
+    }
+
+    private static String findLibreOfficePath() {
+        String windowsPath = "C:\\Program Files\\LibreOffice\\program\\soffice.com";
+        try {
+            ProcessBuilder pb = new ProcessBuilder(
+                    "where soffice.com"
+            );
+            Process process = pb.start();
+            pb.redirectErrorStream(true);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                windowsPath = line;
+                if (windowsPath.contains("LibreOffice")) break;
+            }
+            process.waitFor();
+        } catch (Exception e) {
+            errors.put("Ошибка LibreOffice", "LibreOffice не найден");
+            fillLogFile();
+        }
+        return windowsPath;
     }
 }
