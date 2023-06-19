@@ -147,7 +147,7 @@ public class Worker extends SwingWorker<Object, Object> {
                 Row row = ExcelCellNumbers.rowsDataList.get(i);
 
                 Cell ttnNumber = row.getCell(CellReference.convertColStringToIndex("L"));
-                Cell nameCell = row.getCell(CellReference.convertColStringToIndex("Q"));
+                Cell nameCell = row.getCell(CellReference.convertColStringToIndex("V"));
                 String fileNameTTNPart = getFileNameTTNPart(i, ttnNumber, nameCell);
 
                 File fileTTNRes = new File(paths.get("original") + File.separatorChar + fileNameTTNPart + ".xls");
